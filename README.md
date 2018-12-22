@@ -14,4 +14,4 @@ HTML5, CSS, AJAX and JSON, Bootstrap4, AngularJS, Node.js(Express.js), Google Ap
 ## Referencing API
 GoogleMap, Google Custom Search, Ticketmaster API, Spotify API, SongKick API
 
-[![eventExplorer-Swift4](http://img.youtube.com/vi/kXpGSFL1m-8/0.jpg)](http://www.youtube.com/watch?v=kXpGSFL1m-8 "eventExplorer-webapp"  target="_blank")
+[![eventExplorer-Swift4](http://img.youtube.com/vi/kXpGSFL1m-8/0.jpg)](http://www.youtube.com/watch?v=kXpGSFL1m-8 "eventExplorer-webapp")
