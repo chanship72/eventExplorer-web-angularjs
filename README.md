@@ -9,7 +9,7 @@ event info table, artist info table, venue info table, and upcoming events relat
 respectively.
 
 ## Skill Set
-HTML5, CSS, AJAX and JSON, Bootstrap4, AngularJS, Node.js(Express.js), Google App Engine
+HTML5, CSS, Javascript, AJAX and JSON, Bootstrap4, AngularJS, Node.js(Express.js), Google App Engine
 
 ## Referencing API
 GoogleMap, Google Custom Search, Ticketmaster API, Spotify API, SongKick API
