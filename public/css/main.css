@@ -1,0 +1,94 @@
+
+html {
+	font-size: 0.8rem;
+  }
+  
+@include media-breakpoint-up(sm) {
+	html {
+	  font-size: 1.1rem;
+	}
+}
+  
+@include media-breakpoint-up(md) {
+	html {
+	  font-size: 1.3rem;
+	}
+}
+  
+@include media-breakpoint-up(lg) {
+	html {
+	  font-size: 1.5rem;
+	}
+}
+
+.rstBtn:not(:disabled):not(.disabled).active, .favBtn:not(:disabled):not(.disabled).active{
+	color: white;
+	background-color: #007BFF;
+	border: none;
+}
+
+.favBtn:not(:disabled):not(.disabled), .rstBtn:not(:disabled):not(.disabled){
+	color: #007BFF;
+	background-color: white;
+	border: none;
+}
+.btn-light{
+	color: black;
+	border: 1px solid black;
+	background-color: white;
+}
+
+.btn-light:disabled{
+	border: 1px solid lightgray;
+	background-color: white;
+}
+.animate-slideL.ng-hide-add{
+	animation: 0.8s leftSlide ease;
+}
+
+.animate-slideR.ng-hide-add{
+	animation: 0.8s rightSlide ease;
+}
+
+@keyframes rightSlide{
+	0% {
+		opacity: 1;
+	}
+	100% {
+		transform: translate3d(100%, 0, 0);
+		opacity: 0;
+	}
+}
+
+@keyframes leftSlide{
+	0% {
+		opacity: 1;
+	}
+	100% {
+		transform: translate3d(-100%, 0, 0);
+		opacity: 0;
+	}
+}
+.progress-wrapper{
+    position: relative;
+    margin:0 auto;
+    font-size: 21px;
+}
+.progress{
+	position: absolute;
+	border: 1px;
+	left: 10px;
+	top: 10px;
+    width: 100%;
+    height: 100%;
+    line-height: 6em;
+    font-size:1em;
+    text-align: center;
+    font-weight: 100;
+}
+.show-hide {
+	transition: all linear 0.8s;
+}
+.show-hide.ng-hide {
+	opacity: 0;
+}
