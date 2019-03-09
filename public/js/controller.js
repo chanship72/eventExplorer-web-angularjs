@@ -4,22 +4,9 @@ eventControllers.controller('searchController',
    function eventController($scope, $http, $timeout, $window, $q, $log, moment) {
       $scope.ipAPIurl = "http://ip-api.com/json";
       $scope.rootURI = "http://eventexplorer.us-west-1.elasticbeanstalk.com";
-      //$scope.rootURI = "http://localhost:8081";
+      //$scope.rootURI = "http://localhost:8081";   //local Test URI
 
-      // auto complete query
-      $scope.query = function(searchText) {
-        return $http.get($scope.rootURI + '/autocomplete/' + searchText)
-          .then(function(data) {
-            var suggestList = [];
-            if(data.data.attractions != undefined){
-              for(var i=0; i<data.data.attractions.length;i++){
-                suggestList.push(data.data.attractions[i].name);
-              }
-            }
-            return suggestList;
-          });
-      };      
-      $scope.detailFavBtn = false;
+      // search form obj
       $scope.form = {
         keyword: '',
         location: true,
@@ -31,11 +18,7 @@ eventControllers.controller('searchController',
         specify: '',
         invalidLocation: false
       };
-      detailInfoItems.seatMap = false;
-      $scope.previousFavList = false;
-      $scope.resultList = [];
-      $scope.favoriteList = [];
-      // detail obj
+      // event detail obj
       $scope.detailInfoItems = {
         id: '',
         title: '',
@@ -50,52 +33,59 @@ eventControllers.controller('searchController',
         seatMap: '',
         num: 0
       };
-      // spotify obj      
+      // spotify query obj      
       $scope.spotifyArtist = {
         name: '',
         followers: '',
         popularity: 0,
         checkat: ''
       };
-      $scope.upcomingEventList = [];
+      $scope.detailFavBtn = false;              // (event detail) - favorite button
+      $scope.detailInfoItems.seatMap = false;   // (event detail) - seatmap popup panel
+      $scope.previousFavList = false;           // saved favorite list
+      $scope.resultList = [];                   // event search result
+      $scope.favoriteList = [];                 // favorite list
+      $scope.upcomingEventList = [];            // upcoming event list
+      $scope.upcomingEventLen = 0;              // number of upcoming events
+      $scope.showMore = 5;                      // 
+      $scope.showMoreBtn = "Show More";         // (upcomingevent) - showme button
 
+      // (searchform) specific location (Latitude/Longitude)
       $scope.targetLoc = {
         lat: 0.0,
         lon: 0.0
       };
+      // (searchform) current location (Latitude/Longitude)
       $scope.currentLoc = {
         lat: 0.0,
         lon: 0.0
       };
-      $scope.upcomingEventLen = 0;
-      $scope.showMore = 5;
-      $scope.showMoreBtn = "Show More";
 
       // panel initialize
-      $scope.resultInfo = false;
-      $scope.getLocErr = false;
-      $scope.listPanel = false;
-      $scope.progressBar = false;
-      $scope.resultTable = false;
-      $scope.detailButton = true;
-      $scope.resultPanel = true;
-      $scope.detailPanel = false;
-      $scope.favoriteTable = false;
-      $scope.failErr = false;
-      $scope.eventShow = false;
-      $scope.artistShow = false; 
-      $scope.venueShow = false;
-      $scope.upcomingShow = false;
-      $scope.photoTab = false;
-      $scope.spotifyTab = false;
+      $scope.resultInfo = false;              // (searchform) result panel flag
+      $scope.getLocErr = false;               // (searchform) location retrieval error
+      $scope.listPanel = false;               // (searchform) result list panel
+      $scope.progressBar = false;             // (searchform) progress bar
+      $scope.resultTable = false;             // (searchform) result list
+      $scope.detailButton = true;             // (searchform) back to detail page
+      $scope.resultPanel = true;              // (detail) return to searchform
+      $scope.detailPanel = false;             // (detail) detail panel flag
+      $scope.favoriteTable = false;           // (searchform) favorite tab flag
+      $scope.failErr = false;                 // (detail) error/warning flag
+      $scope.eventShow = false;               // (detail) event detail tab flag
+      $scope.artistShow = false;              // (detail) artist tab flag
+      $scope.venueShow = false;               // (detail) venue tab flag
+      $scope.upcomingShow = false;            // (detail) upcomingevent tab flag
+      $scope.photoTab = false;                // (detail) photo tab flag
+      $scope.spotifyTab = false;              // (detail) artitst/teams-(spotify)info tab flag
       
-      $scope.detailIdx = -1;
-      $scope.detailId = "";
-      $scope.tabSelected = 1;
+      $scope.detailIdx = -1;                  // (detail) index
+      $scope.detailId = "";                   // (detail) page 
+      $scope.tabSelected = 1;                 // (detail) subtab-id
+      $scope.activeTabIndex = 0;              // (detail) active subtab-id
+      $scope.photos = [];                     // (detail) photo-list
 
-      $scope.activeTabIndex = 0;
-
-      $scope.photos = [];
+      // venue obj
       $scope.venueInfo = {
         name: '',
         address: '',
@@ -105,20 +95,11 @@ eventControllers.controller('searchController',
         generalRule: '',
         childRule: ''
       };
-      $scope.locFound = false;
-      $scope.invalid = true;
-      $scope.locErr = false;      //result list error (nothing returned)
+      $scope.locFound = false;                // location retrieval flag
+      $scope.invalid = true;                  // warning sign flag
+      $scope.locErr = false;                  //result list error (nothing returned)
 
-      if ($scope.form.location) {
-        try{
-          $http.get($scope.ipAPIurl).then(function(response) {
-            $scope.currentLoc = {lat: response.data.lat, lon: response.data.lon};
-            $scope.locFound = true;
-          });
-        }catch(e){
-          $scope.getLocErr = true;
-        }
-      };
+      // (searchform) - category options
       $scope.categoryOptions = [{
         value: 'all',
         label: 'All'
@@ -138,36 +119,9 @@ eventControllers.controller('searchController',
         value: 'KZFzniwnSyZfZ7v7n1',
         label: 'Miscellaneous'  
       }];
-      $scope.form.category = $scope.categoryOptions[0];
-      $scope.resortList = true;
-      $scope.orderFields = [
-        {label:'Default', value:""},
-        {label:'Event Name', value: "displayName"},
-        {label:'Time', value: "dateTime"},
-        {label:'Artist', value: "artist"},
-        {label:'Type', value: "type"}
-      ];
-      $scope.orderType = [
-        {label:'Ascending', value:''},
-        {label:'Descending', value:'reverse'}
-      ];
-      $scope.orderTypeSelected = $scope.orderType
-      $scope.sortBy = function(propertyName) {
-        $scope.resortList = false;
-        $scope.fieldOrder = propertyName;
-        $scope.resortList = true;
-      };
-      $scope.sortByOrder = function(propertyName) {
-        $scope.resortList = false;
-        $scope.orderTypeSelected = propertyName;
-        $scope.resortList = true;
-      };
+      $scope.form.category = $scope.categoryOptions[0];         // (searchform) - default category : all
 
-      $scope.fieldOrder = $scope.orderFields[0];
-      $scope.sortOrder = [
-        'Ascending',
-        'Descending'
-      ];
+      // (searchform) - distance option : miles / kilometers
       $scope.distUnitOptions = [{
         value: '0',
         label: 'Miles'
@@ -175,6 +129,68 @@ eventControllers.controller('searchController',
         value: '1',
         label: 'kilometers'
       }];
+
+
+      $scope.resortList = true;                                 // (upcomingEvent) - re-sorting flag : (true) show re-sorting tab / (false) hide
+
+      // (upcomingEvent) - ordering fields options
+      $scope.orderFields = [
+        {label:'Default', value:""},
+        {label:'Event Name', value: "displayName"},
+        {label:'Time', value: "dateTime"},
+        {label:'Artist', value: "artist"},
+        {label:'Type', value: "type"}
+      ];
+
+      // (upcomingEvent) - ordering type : ascending / descending
+      $scope.orderType = [
+        {label:'Ascending', value:''},
+        {label:'Descending', value:'reverse'}
+      ];
+      $scope.orderTypeSelected = $scope.orderType               // (upcomingEvent) - selected order type
+      
+      // (upcomingEvent) - sorting by selected field (eventName)
+      $scope.sortBy = function(propertyName) {
+        $scope.resortList = false;
+        $scope.fieldOrder = propertyName;
+        $scope.resortList = true;
+      };
+      // (upcomingEvent) - sorting by selected type : ascending / descending
+      $scope.sortByOrder = function(typeName) {
+        $scope.resortList = false;
+        $scope.orderTypeSelected = typeName;
+        $scope.resortList = true;
+      };
+
+      $scope.fieldOrder = $scope.orderFields[0];                // (upcomingEvent) - default ordering field : default
+      $scope.sortOrder = [
+        'Ascending',
+        'Descending'
+      ];
+      // auto complete query (search form)
+      $scope.query = function(searchText) {
+        return $http.get($scope.rootURI + '/autocomplete/' + searchText)
+          .then(function(data) {
+            var suggestList = [];
+            if(data.data.attractions != undefined){
+              for(var i=0; i<data.data.attractions.length;i++){
+                suggestList.push(data.data.attractions[i].name);
+              }
+            }
+            return suggestList;
+          });
+      };   
+      // (search) - get current location from ipAPI
+      if ($scope.form.location) {
+        try{
+          $http.get($scope.ipAPIurl).then(function(response) {
+            $scope.currentLoc = {lat: response.data.lat, lon: response.data.lon};
+            $scope.locFound = true;
+          });
+        }catch(e){
+          $scope.getLocErr = true;
+        }
+      };
 
       // press search button
       $scope.submit = function(searchForm) {
@@ -209,7 +225,6 @@ eventControllers.controller('searchController',
           lon: $scope.currentLoc.lon
         }
         var url = $scope.rootURI + `/discovery`;
-        //${encodeURI(searchForm.keyword.$viewValue)}/${$scope.form.category.value}/${$scope.form.distance}/${$scope.form.distUnit.value}/${$scope.currentLoc.lat}/${$scope.currentLoc.lon}`;
 
         $http.get(url, {params:param}).then(function(response) {
           if(response.data._embedded){

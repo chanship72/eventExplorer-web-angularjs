@@ -297,66 +297,66 @@
                 </ul>
             </div> 
             <div class="d-flex flex-row-center col-sm-12" id="eventTab" ng-show="eventShow" aria-labelledby="event-tab">
-                    <table class="table table-striped mx-0 my-0" style="font-size:0.8rem;">
-                        <tbody ng-model="detailInfoItems">
-                            <tr>
-                                <td style="width:40%;height:15px;"><b>Artist/Teams(s)</b></td>
-                                <td>{{ detailInfoItems.name }}</td>
-                            </tr>
-                            <tr>
-                                <td><b>Venue</b></td>
-                                <td>{{ detailInfoItems.venue }}</td>
-                            </tr>
-                            <tr>
-                                <td><b>Time</b></td>
-                                <td>{{ detailInfoItems.date | date:'MMM d, y' }} {{detailInfoItems.time}}</td>
-                            </tr>
-                            <tr>
-                                <td><b>Category</b></td>
-                                <td>{{ detailInfoItems.category }}</td>
-                            </tr>
-                            <tr ng-if="detailInfoItems.priceRange">
-                                <td><b>Price Range</b></td>
-                                <td>{{ detailInfoItems.priceRange }}</td>
-                            </tr>
-                            <tr>
-                                <td><b>Ticket Status</b></td>
-                                <td>{{ detailInfoItems.ticketStatus }}</td>
-                            </tr>
-                            <tr>
-                                <td><b>Buy Ticket At</b></td>
-                                <td>
-                                    <a href="{{ detailInfoItems.ticketOfficeURl }}" target="_blank">Ticketmaster</a>
-                                </td>
-                            </tr>
-                            <tr ng-if="detailInfoItems.seatMap">
-                                <td><b>Seat Map</b></td>
-                                <td>
-                                    <a href="" data-toggle="modal" data-target="#exampleModal" >View Seat Map Here</a>
-                                    <!-- Modal -->
-                                    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLabel">View Seat Map</h5>
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <img src="{{detailInfoItems.seatMap}}" class="img-fluid" alt="Responsive image">
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                </div>
+                <table class="table table-striped mx-0 my-0" style="font-size:0.8rem;">
+                    <tbody ng-model="detailInfoItems">
+                        <tr>
+                            <td style="width:40%;height:15px;"><b>Artist/Teams(s)</b></td>
+                            <td>{{ detailInfoItems.name }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Venue</b></td>
+                            <td>{{ detailInfoItems.venue }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Time</b></td>
+                            <td>{{ detailInfoItems.date | date:'MMM d, y' }} {{detailInfoItems.time}}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Category</b></td>
+                            <td>{{ detailInfoItems.category }}</td>
+                        </tr>
+                        <tr ng-if="detailInfoItems.priceRange">
+                            <td><b>Price Range</b></td>
+                            <td>{{ detailInfoItems.priceRange }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Ticket Status</b></td>
+                            <td>{{ detailInfoItems.ticketStatus }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Buy Ticket At</b></td>
+                            <td>
+                                <a href="{{ detailInfoItems.ticketOfficeURl }}" target="_blank">Ticketmaster</a>
+                            </td>
+                        </tr>
+                        <tr ng-if="detailInfoItems.seatMap">
+                            <td><b>Seat Map</b></td>
+                            <td>
+                                <a href="" data-toggle="modal" data-target="#exampleModal" >View Seat Map Here</a>
+                                <!-- Modal -->
+                                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">View Seat Map</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <img src="{{detailInfoItems.seatMap}}" class="img-fluid" alt="Responsive image">
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                             </div>
                                         </div>
                                     </div>
+                                </div>
 
-                                </td>
-                            </tr>                                                                                                                
-                        </tbody>
-                    </table>
+                            </td>
+                        </tr>                                                                                                                
+                    </tbody>
+                </table>
             </div>
             <div class="d-flex flex-row-center col-sm-12 " id="artistTab" ng-show="artistShow" aria-labelledby="artist-tab">
                 <div class="">
@@ -419,10 +419,10 @@
                 </div>
             </div>                
             <div class="container" ng-show="venueShow" id="venueTab" aria-labelledby="venue-tab">
-                    <div class="row justify-content-center">
-                        <span class="font-weight-bold" ng-model="venueInfo">{{venueInfo.name}}</span>
-                    </div>
-                    <div class="row">
+                <div class="row justify-content-center">
+                    <span class="font-weight-bold" ng-model="venueInfo">{{venueInfo.name}}</span>
+                </div>
+                <div class="row">
                     <table class="table table-striped " style="font-size:0.8rem;">
                         <tbody ng-model="venueInfo">
                             <tr>

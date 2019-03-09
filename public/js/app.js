@@ -1,4 +1,3 @@
-
 var eventApp = angular.module('eventApp', [
     'ngRoute',
     'eventControllers',
@@ -6,6 +5,7 @@ var eventApp = angular.module('eventApp', [
     'angular-svg-round-progressbar'
 ]);
 eventApp.constant("moment", moment);
+
 eventApp.config(['$routeProvider', function($routeProvider) {
   $routeProvider
     .when('/', {

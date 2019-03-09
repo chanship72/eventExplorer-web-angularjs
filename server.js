@@ -1,56 +1,71 @@
 const https = require("https");
 const express = require('express');
 const cors = require("cors");
+const geohash = require('ngeohash');
+const spotifyClient = require("spotify-web-api-node");
+
 const ticketmasterApiKey = "eePh4DjcfI7g2qZLAH0iHUcBEurozHTW";
 const googleApiKey = "AIzaSyASkeq3CB5KbrpTJNo-Zbv9VgoIR5DnT20";
 const songkickApiKey = "pItOrDqhfeIIVJ6p";
 const googleCustomAPIkey = "AIzaSyCsovVzjZSpHECQUB7e4P6ISM2w2YHUAtY";
 const googleCustomAPIID = "009548188721184461648:wi4ufclh7ka";
-var geohash = require('ngeohash');
 
 const app = express();
 var port = 8081;
 
-var spotifyClient = require("spotify-web-api-node");
-var spotifyApi = new spotifyClient({
-  clientId: '4a958602383f42d5acca2e21265ad650',
-  clientSecret: '665552c893034b4a8ddfe73d40582fa2'
-});
-
-var getNewToken = function(){
-    spotifyApi.clientCredentialsGrant().then(
-        function(data) {
-            console.log('The access token expires in ' + data.body['expires_in']);
-            console.log('The access token is ' + data.body['access_token']);
-    
-                    // Save the access token so that it's used in future calls
-            spotifyApi.setAccessToken(data.body['access_token']);
-        },
-        function(err) {
-            console.log('Something went wrong when retrieving an access token', err);
-        }
-    );
-    setTimeout(getNewToken, 1800000);
-};
-getNewToken();
-
-
 app.use('/', express.static('./public/'));
-
 app.use(cors());
 
-//  API#0 : SpotifyAPI
-//  refresh Token
+//  API#0 : SpotifyAPI (Internal API)
+//  Refreshing spotify token
 //  URI   : /refresh
 app.get('/refresh', function(req, res) {
+    // Spotify Client Initialize
+    var spotifyApi = new spotifyClient({
+        clientId: '4a958602383f42d5acca2e21265ad650',
+        clientSecret: '665552c893034b4a8ddfe73d40582fa2'
+    });
+    
+    // Spotify Client: Update Token
+    // desc: token was renewed in every 24hours 
+    var getNewToken = function(){
+        spotifyApi.clientCredentialsGrant().then(
+            function(data) {
+                console.log('The access token expires in ' + data.body['expires_in']);
+                console.log('The access token is ' + data.body['access_token']);
+
+                // Save the access token so that it's used in future calls
+                spotifyApi.setAccessToken(data.body['access_token']);
+            },
+            function(err) {
+                console.log('Something went wrong when retrieving an access token', err);
+            }
+        );
+        setTimeout(getNewToken, 1800000);
+    };
     getNewToken();
 });
 
-//  API#1 : TicketmasterAPI
+//  API#1 : SpotifyAPI
+//  Retrieve artist information by name
+//  URI   : /sArtist/:artist
+app.get('/artist', function(req, res5) {
+    console.log(req.query.artist)
+    spotifyApi.searchArtists(req.query.artist)
+      .then(function(data) {
+        console.log('Search artists by "Love"', data.body);
+        res5.json(data.body);
+
+      }, function(err) {
+        console.error(err);        
+      });
+});
+
+
+//  API#2 : TicketmasterAPI discovery
 //  URI   : /discovery/:keyword/:radius/:unit(0/1)/:lat/:lon 
 //  ex    : https://app.ticketmaster.com/discovery/v2/events.json?apikey=eePh4DjcfI7g2qZLAH0iHUcBEurozHTW&keyword=usc&segmentId=&radius=10000&unit=miles&geoPoint=ww8p1r4t8 
 //  usage : http://localhost:9000/discovery/usc/10000/0/34.0266/-118.2831
-// app.get('/discovery/:keyword/:segmentid/:radius/:unit/:lat/:lon', function(req, res1){
 app.get('/discovery', function(req, res1){
 
     console.log(req.query);
@@ -61,7 +76,7 @@ app.get('/discovery', function(req, res1){
         units = 'km';
     }
     if(req.query.segmentid == 'all'){
-    // resp.setHeader('Access-Control-Allow-Origin','*');
+
     url = `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${ticketmasterApiKey}&keyword=` 
             + encodeURIComponent(req.query.keyword) + `&radius=` + req.query.radius + `&unit=`
             + units + `&geoPoint=` + encodeURIComponent(geoLoc) + `&sort=date,asc`;
@@ -91,7 +106,7 @@ app.get('/discovery', function(req, res1){
     }); 
 });
 
-//  API#2 : TicketmasterAPI getDetail
+//  API#3 : TicketmasterAPI getDetail
 //  URI   : /detailinfo/:eventid
 //  ex    : https://app.ticketmaster.com/discovery/v2/events/".$event_id."?apikey=".$api_key
 //  usage : http://localhost:9000/detailinfo/Z698xZC2Z1717_6
@@ -118,7 +133,7 @@ app.get('/detailinfo/:eventid', function(req, res2){
         });
     }); 
 });
-//  API#3 : TicketmasterAPI venueDetail
+//  API#4 : TicketmasterAPI venueDetail
 //  URI   : /venueInfo/:venue
 //  ex    : https://app.ticketmaster.com/discovery/v2/venues?apikey=".rawurlencode($api_key)."&keyword=
 //  usage : http://localhost:9000/venueInfo/TD+Garden
@@ -147,8 +162,7 @@ app.get('/venueInfo', function(req, res3){
     }); 
 });
 
-
-//  API#4 : GoogleMapAPI
+//  API#5 : GoogleMapAPI
 //  URI   : /location/loc
 //  ex    : https://maps.googleapis.com/maps/api/geocode/json?address=".$address."&key=".$map_key
 //  usage : http://localhost:9000/location/new+york
@@ -169,8 +183,6 @@ app.get('/location/:loc', function(req, res4){
         
         res.on("end", () => {
             resbody4 = JSON.parse(resbody4);
-            // var coordinates = body.results[0].geometry.location.lat + "," + body.results[0].geometry.location.lng;
-            ///var geoLoc = geohash.encode(body.results[0].geometry.location.lat, body.results[0].geometry.location.lng);
             var result4 = {lat: resbody4.results[0].geometry.location.lat, lon: resbody4.results[0].geometry.location.lng};
             console.log(result4);
             res4.json(result4);
@@ -178,26 +190,8 @@ app.get('/location/:loc', function(req, res4){
             resbody4 = "";
             result4 = "";
             res4 = null;
-            // console.log(resJSON);
-            // resp.json(resJSON);
-            //resp.json(resbody);
         });
     });
-});
-
-
-//  API#5 : SpotifyAPI
-//  URI   : /sArtist/:artist
-app.get('/artist', function(req, res5) {
-    console.log(req.query.artist)
-    spotifyApi.searchArtists(req.query.artist)
-      .then(function(data) {
-        console.log('Search artists by "Love"', data.body);
-        res5.json(data.body);
-
-      }, function(err) {
-        console.error(err);        
-      });
 });
 
 //  API#6 : GoogleCustomAPI
@@ -227,7 +221,7 @@ app.get('/photo', function(req, res6){
     });
 });
 
-//  API#7 : SongkickAPI
+//  API#7 : SongkickAPI upcomingevent
 //  URI   : /upcomingevent/:venue
 //  ex    : https://api.songkick.com/api/3.0/search/venues.json?query=colloseum&apikey=pItOrDqhfeIIVJ6p
 //  usage : http://localhost:9000/upcomingevent/colloseum
@@ -283,7 +277,7 @@ app.get('/upcomingevent', function(req, res7){
     });
 });
 
-//  API#8 : Autocomplete
+//  API#8 : TicketmasterAPI autocomplete
 //  URI   : /autocomplete/:keyword
 //  ex    : https://app.ticketmaster.com/discovery/v2/suggest?apikey=YOUR_API_KEY&keyword=laker
 app.get('/autocomplete/:keyword', function(req, res8){
@@ -310,7 +304,6 @@ app.get('/autocomplete/:keyword', function(req, res8){
         });
     });
 });
-
 
 app.listen(port, () =>{ 
     console.log(`listening on port ${port}!`)
