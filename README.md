@@ -7,14 +7,14 @@ on a button to search for event details, your webpage should display several tab
 event info table, artist info table, venue info table, and upcoming events related to this event
 respectively.
 
-## Skill Set
+## 1. Skill Set
 HTML5, CSS, Javascript, AJAX and JSON, Bootstrap4, AngularJS, Node.js(Express.js), Google App Engine
 
-## Referencing API
+## 2. Referencing API
 GoogleMap, Google Custom Search, Ticketmaster API, Spotify API, SongKick API
 
-## Demo
+## 3. Demo
 [![eventExplorer-Swift4](http://img.youtube.com/vi/kXpGSFL1m-8/0.jpg)](http://www.youtube.com/watch?v=kXpGSFL1m-8 "eventExplorer-webapp")
 
-## Link
+## 4. Link
 [http://eventexplorer.us-west-1.elasticbeanstalk.com/](http://eventexplorer.us-west-1.elasticbeanstalk.com/)
